@@ -2,6 +2,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 from random import shuffle
 
+
 def normal_distribution(points, a):
     return 1 / (1 * np.sqrt(2 * np.pi)) * np.exp(-(points - a) ** 2 / (2 * 1 ** 2))
 
@@ -27,35 +28,25 @@ def predict(W, b, x):
     return np.argmax(softmax(W, b, x)) + 1
 
 
-# def softmax(W, x, b):
-#
-#     # TODO if doesn't work, try the above function
-#     numerator = np.exp(np.dot(W, x) + b)
-#     denominator = 0
-#
-#     for j in range(W.shape[1]):
-#         denominator += np.exp(W[j] * x + b[j])
-#
-#     return numerator / denominator
-
-
 def update(W, x, b, y, eta):
     length = W.shape[0]
 
     for i in range(length):
-
         denominator = 0
+
         for j in range(length):
             denominator += np.exp(W[j] * x + b[j])
 
         numerator = np.exp(W[i] * x + b[i])
 
+        softmax_val = numerator / denominator
+
         if i == y:
-            W[i] = -eta * x + eta * numerator / denominator * x
-            b[i] = eta * numerator / denominator - eta
+            W[i] -= -eta * x + eta * softmax_val * x
+            b[i] -= eta * softmax_val - eta
         else:
-            W[i] = eta * numerator / denominator * x
-            b[i] = eta * numerator / denominator
+            W[i] -= eta * softmax_val * x
+            b[i] -= eta * softmax_val
 
 
 def calc_loss(W, b, training_examples):
@@ -111,13 +102,9 @@ if __name__ == "__main__":
     # For label a=3, taking 100 samples.
     x3 = np.random.normal(2 * 3, 1, 100)
 
-    # X_train = np.array([x1, x2, x3])
-    # Y_train = np.array([1, 2, 3])
-
     training_examples = [(x, 1) for x in x1]
     training_examples += [(x, 2) for x in x2]
     training_examples += [(x, 3) for x in x3]
-    # training_examples = np.concatenate((xy1, xy2, xy3))
 
     # Create 100 points in the range[0,10]
     # TODO should it be 0,11 instead of 10?
