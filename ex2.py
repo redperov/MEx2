@@ -3,11 +3,24 @@ from matplotlib import pyplot as plt
 from random import shuffle
 
 
-def normal_distribution(points, a):
-    return 1 / (1 * np.sqrt(2 * np.pi)) * np.exp(-(points - a) ** 2 / (2 * 1 ** 2))
+def normal_distribution(points, mu):
+    """
+    Normal distribution function.
+    :param points: set of points
+    :param mu: mu
+    :return:
+    """
+    return 1 / (1 * np.sqrt(2 * np.pi)) * np.exp(-(points - mu) ** 2 / (2 * 1 ** 2))
 
 
 def softmax(W, b, x):
+    """
+    Softmax function.
+    :param W: weights matrix
+    :param b: bias vector
+    :param x: example input
+    :return: matrix of probabilities
+    """
     numerator = np.exp(np.dot(W, x) + b)
     denominator = 0
 
@@ -29,6 +42,15 @@ def predict(W, b, x):
 
 
 def update(W, x, b, y, eta):
+    """
+    Updates the weights and the bias vector according to the update rule.
+    :param W: weights
+    :param x: input example
+    :param b: bias vector
+    :param y: input label
+    :param eta: learning rate
+    :return: None
+    """
     length = W.shape[0]
 
     for i in range(length):
@@ -50,7 +72,7 @@ def update(W, x, b, y, eta):
 
 
 def calc_loss(W, b, training_examples):
-
+    # TODO delete
     loss_sum = 0
     for (x, y) in training_examples:
         loss_sum += -np.log(softmax(W, b, x)[y - 1])
@@ -58,12 +80,19 @@ def calc_loss(W, b, training_examples):
     return loss_sum
 
 
-def train_logistic(training_examples, num_of_labels, dimension):
+def train_logistic_regression(training_examples, num_of_labels, dimension):
+    """
+    Performs multiclass logistic regression on the given training examples.
+    :param training_examples: set of training examples
+    :param num_of_labels: number of labels
+    :param dimension: dimension
+    :return: trained weights and bias
+    """
     # Learning rate.
-    eta = 0.1
+    eta = 0.3
 
     # Number of epochs.
-    epochs = 10
+    epochs = 20
 
     # Weights matrix.
     W = np.ones(shape=(num_of_labels, dimension))
@@ -89,6 +118,13 @@ def train_logistic(training_examples, num_of_labels, dimension):
 
 
 def approximate_to_one(points, W, b):
+    """
+    Perform approximation to p( y = 1 | x)
+    :param points: set of points
+    :param W: weights matrix
+    :param b: bias vector
+    :return: approximation vector
+    """
     return [softmax(W, b, x)[0] for x in points]
 
 
@@ -102,20 +138,21 @@ if __name__ == "__main__":
     # For label a=3, taking 100 samples.
     x3 = np.random.normal(2 * 3, 1, 100)
 
+    # A training set with the above samples and their labels.
     training_examples = [(x, 1) for x in x1]
     training_examples += [(x, 2) for x in x2]
     training_examples += [(x, 3) for x in x3]
 
     # Create 100 points in the range[0,10]
     # TODO should it be 0,11 instead of 10?
-    points = np.linspace(0, 10, 100)
+    points = np.linspace(0, 11, 150)
 
     # Calculate the true distribution for p(y = 1 | x).
     true_distribution = normal_distribution(points, 2) / (
         normal_distribution(points, 2) + normal_distribution(points, 4) + normal_distribution(points, 6))
 
     # Train the logistic regression.
-    W, b = train_logistic(training_examples, 3, 1)
+    W, b = train_logistic_regression(training_examples, 3, 1)
 
     # Approximate the distribution for p(y = 1 | x) according to the learned regression.
     approximated_distribution = approximate_to_one(points, W, b)
