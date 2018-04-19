@@ -71,13 +71,19 @@ def update(W, x, b, y, eta):
             b[i] -= eta * softmax_val
 
 
-def calc_loss(W, b, training_examples):
-    # TODO delete
-    loss_sum = 0
-    for (x, y) in training_examples:
-        loss_sum += -np.log(softmax(W, b, x)[y - 1])
-
-    return loss_sum
+def calc_loss(y, y_hat):
+    """
+    Calculates the error.
+    :param y: true value
+    :param y_hat: predicted value
+    :return:None
+    """
+    if y != y_hat:
+        try:
+            calc_loss.counter += 1
+        except AttributeError:
+            calc_loss.counter = 1
+        print calc_loss.counter
 
 
 def train_logistic_regression(training_examples, num_of_labels, dimension):
@@ -89,10 +95,10 @@ def train_logistic_regression(training_examples, num_of_labels, dimension):
     :return: trained weights and bias
     """
     # Learning rate.
-    eta = 0.3
+    eta = 0.1
 
     # Number of epochs.
-    epochs = 20
+    epochs = 100
 
     # Weights matrix.
     W = np.ones(shape=(num_of_labels, dimension))
@@ -108,11 +114,11 @@ def train_logistic_regression(training_examples, num_of_labels, dimension):
             # Predict.
             y_hat = predict(W, b, x)
 
-            # print calc_loss(W, b, training_examples)
+            # Used for debugging.
+            # calc_loss(y, y_hat)
 
-            # Check if need to update.
-            if y_hat != y:
-                update(W, x, b, y - 1, eta)
+            # Perform update.
+            update(W, x, b, y - 1, eta)
 
     return W, b
 
@@ -145,7 +151,7 @@ if __name__ == "__main__":
 
     # Create 100 points in the range[0,10]
     # TODO should it be 0,11 instead of 10?
-    points = np.linspace(0, 11, 150)
+    points = np.linspace(0, 10, 150)
 
     # Calculate the true distribution for p(y = 1 | x).
     true_distribution = normal_distribution(points, 2) / (
